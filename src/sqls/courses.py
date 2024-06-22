@@ -51,7 +51,7 @@ class CoursesTable(BaseTable):
     def query():
         sql = """
         SELECT * FROM `Courses`
-        WHERE `CourseID` = %s;
+        WHERE `CourseID` LIKE %s AND `CourseName` LIKE %s;
         """
         return sql
 
@@ -105,9 +105,11 @@ class CoursesFunc(BaseFunc):
         else:
             raise gr.Error("修改失败: " + result[1])
 
-    def query(self, id: str):
+    def query(self, id: str, name: str):
         sql = self.genner.query()
-        result = self.handler.query(sql, (id, ))
+        id = "%" + id + "%"
+        name = "%" + name + "%"
+        result = self.handler.query(sql, (id, name))
         if result[0]:
             if len(result[1]) == 0:
                 gr.Warning("查询失败: 未找到该课程!")

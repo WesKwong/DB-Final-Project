@@ -31,13 +31,14 @@ with gr.Blocks() as demo:
                                  inputs=[tid, tname, tgender, ttitle])
         with gr.Tab("📊 信息查询"):
             with gr.Row():
-                tid = gr.Textbox(label="工号",
-                                 placeholder="请输入工号",
-                                 value="T0001")
+                tquery_id = gr.Textbox(label="工号",
+                                       placeholder="请输入工号")
+                tquery_name = gr.Textbox(label="姓名",
+                                         placeholder="请输入姓名")
                 tquery_button = gr.Button("🔍 查询")
             tquery_output = gr.Dataframe(headers=["工号", "姓名", "性别", "职称"])
             tquery_button.click(fn=teacher_func.query,
-                                inputs=[tid],
+                                inputs=[tquery_id, tquery_name],
                                 outputs=[tquery_output])
     with gr.Tab("📚 课程信息"):
         course_genner = CoursesTable()
@@ -60,13 +61,14 @@ with gr.Blocks() as demo:
                                  inputs=[cid, cname, chours, ctype])
         with gr.Tab("📊 信息查询"):
             with gr.Row():
-                cid = gr.Textbox(label="课程号",
-                                 placeholder="请输入课程号",
-                                 value="C0001")
+                cquery_id = gr.Textbox(label="课程号",
+                                       placeholder="请输入课程号")
+                cquery_name = gr.Textbox(label="课程名",
+                                         placeholder="请输入课程名")
                 cquery_button = gr.Button("🔍 查询")
             cquery_output = gr.Dataframe(headers=["课程号", "课程名", "学时数", "课程性质"])
             cquery_button.click(fn=course_func.query,
-                                inputs=[cid],
+                                inputs=[cquery_id, cquery_name],
                                 outputs=[cquery_output])
     with gr.Tab("📝 发表论文"):
         paper_genner = PapersTable()
