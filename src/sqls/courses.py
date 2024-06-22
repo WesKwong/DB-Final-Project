@@ -2,41 +2,27 @@ import gradio as gr
 
 from .base_sql_class import BaseTable, BaseFunc
 
-gender_map = [
-    ("男", 1),
-    ("女", 2)
-]
-
-title_map = [
-    ("博士后", 1),
-    ("助教", 2),
-    ("讲师", 3),
-    ("副教授", 4),
-    ("特任教授", 5),
-    ("教授", 6),
-    ("助理研究员", 7),
-    ("特任副研究员", 8),
-    ("副研究员", 9),
-    ("特任研究员", 10),
-    ("研究员", 11)
+course_type_map = [
+    ("本科生课程", 1),
+    ("研究生课程", 2)
 ]
 
 
-class TeachersTable(BaseTable):
+class CoursesTable(BaseTable):
     """
-    CREATE TABLE IF NOT EXISTS `Teachers` (
-        `TeacherID` VARCHAR(5) NOT NULL,
-        `Name` VARCHAR(256) NOT NULL,
-        `Gender` INTEGER NOT NULL,
-        `Title` INTEGER NOT NULL,
-        PRIMARY KEY (`TeacherID`)
+    CREATE TABLE IF NOT EXISTS `Courses` (
+        `CourseID` VARCHAR(256) NOT NULL,
+        `CourseName` VARCHAR(256) NOT NULL,
+        `CreditHours` INTEGER NOT NULL,
+        `CourseType` INTEGER NOT NULL,
+        PRIMARY KEY (`CourseID`)
     )
     """
 
     @staticmethod
     def insert():
         sql = """
-        INSERT INTO `Teachers` (`TeacherID`, `Name`, `Gender`, `Title`)
+        INSERT INTO `Courses` (`CourseID`, `CourseName`, `CreditHours`, `CourseType`)
         VALUES (%s, %s, %s, %s);
         """
         return sql
@@ -44,44 +30,47 @@ class TeachersTable(BaseTable):
     @staticmethod
     def delete():
         sql = """
-        DELETE FROM `Teachers`
-        WHERE `TeacherID` = %s;
+        DELETE FROM `Courses`
+        WHERE `CourseID` = %s;
         """
         return sql
 
     @staticmethod
     def update():
         sql = """
-        UPDATE `Teachers`
+        UPDATE `Courses`
         SET
-        `Name` = %s,
-        `Gender` = %s,
-        `Title` = %s
-        WHERE `TeacherID` = %s;
+        `CourseName` = %s,
+        `CreditHours` = %s,
+        `CourseType` = %s
+        WHERE `CourseID` = %s;
         """
         return sql
 
     @staticmethod
     def query():
         sql = """
-        SELECT * FROM `Teachers`
-        WHERE `TeacherID` = %s;
+        SELECT * FROM `Courses`
+        WHERE `CourseID` = %s;
         """
         return sql
 
 
-class TeachersFunc(BaseFunc):
+class CoursesFunc(BaseFunc):
 
     def __init__(self, genner, handler) -> None:
         super().__init__(genner, handler)
 
-    def insert(self, id: str, name: str, gender: int, title: int):
+    def insert(self, id: str, name: str, credit_hours: int, course_type: int):
         if id == "":
-            raise gr.Error("工号不能为空!")
+            raise gr.Error("课程号不能为空!")
         if name == "":
-            raise gr.Error("姓名不能为空!")
+            raise gr.Error("课程名不能为空!")
+        if credit_hours < 1:
+            raise gr.Error("学时数不能小于1!")
         sql = self.genner.insert()
-        result = self.handler.execute(sql, (id, name, gender, title))
+        result = self.handler.execute(sql,
+                                      (id, name, credit_hours, course_type))
         if result[0]:
             gr.Info("增加成功!")
         else:
@@ -91,7 +80,7 @@ class TeachersFunc(BaseFunc):
         query_sql = self.genner.query()
         query_result = self.handler.query(query_sql, (id, ))
         if len(query_result[1]) == 0:
-            raise gr.Error("删除失败: 未找到该教师!")
+            raise gr.Error("删除失败: 未找到该课程!")
         sql = self.genner.delete()
         result = self.handler.execute(sql, (id, ))
         if result[0]:
@@ -99,13 +88,18 @@ class TeachersFunc(BaseFunc):
         else:
             raise gr.Error("删除失败: " + result[1])
 
-    def update(self, id: str, name: str, gender: int, title: int):
+    def update(self, id: str, name: str, credit_hours: int, course_type: int):
+        if id == "":
+            raise gr.Error("课程号不能为空!")
+        if name == "":
+            raise gr.Error("课程名不能为空!")
         query_sql = self.genner.query()
         query_result = self.handler.query(query_sql, (id, ))
         if len(query_result[1]) == 0:
-            raise gr.Error("修改失败: 未找到该教师!")
+            raise gr.Error("修改失败: 未找到该课程!")
         sql = self.genner.update()
-        result = self.handler.execute(sql, (name, gender, title, id))
+        result = self.handler.execute(sql,
+                                      (name, credit_hours, course_type, id))
         if result[0]:
             gr.Info("修改成功!")
         else:
@@ -116,12 +110,11 @@ class TeachersFunc(BaseFunc):
         result = self.handler.query(sql, (id, ))
         if result[0]:
             if len(result[1]) == 0:
-                gr.Warning("查询失败: 未找到该教师!")
+                gr.Warning("查询失败: 未找到该课程!")
                 return []
             else:
                 return [[
-                    row[0], row[1], gender_map[row[2] - 1][0],
-                    title_map[row[3] - 1][0]
+                    row[0], row[1], row[2], course_type_map[row[3] - 1][0]
                 ] for row in result[1]]
         else:
             raise gr.Error("查询失败: " + result[1])
