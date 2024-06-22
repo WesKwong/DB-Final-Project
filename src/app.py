@@ -286,7 +286,101 @@ with gr.Blocks() as demo:
                                  outputs=[project_df, members_df])
 
     with gr.Tab("🎓 主讲课程"):
-        pass
+        taught_genner = TaughtCoursesTable()
+        taught_func = TaughtCoursesFunc(taught_genner, handler)
+        with gr.Tab("✂️ 信息增删改"):
+            gr.Markdown("<center> <h2> 📚 课程信息 </h2> </center>")
+            with gr.Row():
+                tcid = gr.Textbox(label="课程编号",
+                                  placeholder="请输入课程编号",
+                                  value="C0001",
+                                  interactive=True)
+                tcyear = gr.Number(label="学年",
+                                   value=current_year,
+                                   minimum=1900,
+                                   maximum=current_year,
+                                   interactive=True,
+                                   precision=0)
+                tcsemester = gr.Dropdown(semester_map,
+                                         label="学期",
+                                         value=1,
+                                         interactive=True)
+                tchours = gr.Number(label="课程学时",
+                                    value=1,
+                                    minimum=1,
+                                    precision=0,
+                                    interactive=True)
+
+            gr.Markdown("<center> <h2> 👨‍🏫 教师信息 </h2> </center>")
+            tc_num = gr.State(value=1)
+            with gr.Row():
+                add_teacher_btn = gr.Button("➕ 增加教师")
+                del_teacher_btn = gr.Button("➖ 删除教师")
+            add_teacher_btn.click(lambda x: x + 1, tc_num, tc_num)
+            del_teacher_btn.click(lambda x: x - 1
+                                  if x > 1 else 1, tc_num, tc_num)
+
+            @gr.render(inputs=tc_num)
+            def add_teacher(num):
+                boxes = []
+                for i in range(num):
+                    gr.Markdown(f"<h3> 教师{i+1} </h3>")
+                    with gr.Row():
+                        id_box = gr.Textbox(label="教师工号",
+                                            placeholder="请输入教师工号",
+                                            value=f"T{i+1:04d}",
+                                            key=i)
+                        hours_box = gr.Number(label="授课学时",
+                                              value=1,
+                                              minimum=1,
+                                              precision=0,
+                                              interactive=True,
+                                              key=i + 1e9 + 7)
+                        boxes.append(id_box)
+                        boxes.append(hours_box)
+
+                tcinsert_button.click(
+                    fn=taught_func.insert,
+                    inputs=[tcid, tcyear, tcsemester, tchours, tc_num, *boxes])
+                tcupdate_button.click(
+                    fn=taught_func.update,
+                    inputs=[tcid, tcyear, tcsemester, tchours, tc_num, *boxes])
+
+            with gr.Row():
+                tcinsert_button = gr.Button("💡 增加")
+                tcdelete_button = gr.Button("🗑️ 删除")
+                tcupdate_button = gr.Button("✏️ 修改")
+
+            tcdelete_button.click(fn=taught_func.delete,
+                                  inputs=[tcid, tcyear, tcsemester])
+
+        with gr.Tab("📊 信息查询"):
+            with gr.Row():
+                tcquery_id = gr.Textbox(label="课程编号",
+                                        placeholder="请输入课程编号",
+                                        value="C0001",
+                                        interactive=True)
+                tcquery_year = gr.Number(label="学年",
+                                         value=current_year,
+                                         minimum=1900,
+                                         maximum=current_year,
+                                         interactive=True,
+                                         precision=0)
+                tcquery_semester = gr.Dropdown(semester_map,
+                                               label="学期",
+                                               value=1,
+                                               interactive=True)
+                tcquery_button = gr.Button("🔍 查询")
+            gr.Markdown("<h3> 📚 课程信息 </h3>")
+            course_df = gr.Dataframe(
+                headers=["课程编号", "课程名称", "学时数", "课程性质", "学年", "学期"])
+            gr.Markdown("<h3> 👨‍🏫 教师信息 </h3>")
+            teachers_df = gr.Dataframe(headers=["教师工号", "教师姓名", "授课学时"])
+            tcquery_button.click(
+                fn=taught_func.query,
+                inputs=[tcquery_id, tcquery_year, tcquery_semester],
+                outputs=[course_df, teachers_df])
+
     with gr.Tab("📊 查询统计"):
         pass
 

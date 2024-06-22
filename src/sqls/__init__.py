@@ -5,4 +5,4 @@ from .papers import PapersTable, PapersFunc, paper_type_map, level_map
 from .projects import ProjectsTable, ProjectsFunc, project_type_map
 from .publishedpapers import PublishedPapersTable
 from .undertakenprojects import UndertakenProjectsTable
-from .taughtcourses import TaughtCoursesTable, semester_map
+from .taughtcourses import TaughtCoursesTable, TaughtCoursesFunc, semester_map
