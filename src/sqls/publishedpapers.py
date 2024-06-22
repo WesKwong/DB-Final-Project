@@ -1,4 +1,4 @@
-from .base_table import BaseTable
+from .base_sql_class import BaseTable
 
 
 class PublishedPapersTable(BaseTable):
@@ -17,31 +17,38 @@ class PublishedPapersTable(BaseTable):
     def __init__(self):
         super().__init__()
 
-    def insert(self, teacher_id: str, paper_id: int, rank: int,
-               is_corresponding_author: bool):
+    @staticmethod
+    def insert():
         sql = """
         INSERT INTO `PublishedPapers` (`TeacherID`, `PaperID`, `Rank`,
         `IsCorrespondingAuthor`)
-        VALUES (%s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s);
         """
-        self.execute(sql,
-                     (teacher_id, paper_id, rank, is_corresponding_author))
+        return sql
 
-    def delete(self, teacher_id: str, paper_id: int):
+    @staticmethod
+    def delete():
         sql = """
         DELETE FROM `PublishedPapers`
-        WHERE `TeacherID` = %s AND `PaperID` = %s
+        WHERE `TeacherID` = %s AND `PaperID` = %s;
         """
-        self.execute(sql, (teacher_id, paper_id))
+        return sql
 
-    def update(self, teacher_id: str, paper_id: int, rank: int,
-               is_corresponding_author: bool):
+    @staticmethod
+    def update():
         sql = """
         UPDATE `PublishedPapers`
         SET
         `Rank` = %s,
         `IsCorrespondingAuthor` = %s
-        WHERE `TeacherID` = %s AND `PaperID` = %s
+        WHERE `TeacherID` = %s AND `PaperID` = %s;
         """
-        self.execute(sql,
-                     (rank, is_corresponding_author, teacher_id, paper_id))
+        return sql
+
+    @staticmethod
+    def query():
+        sql = """
+        SELECT * FROM `PublishedPapers`
+        WHERE `TeacherID` = %s AND `PaperID` = %s;
+        """
+        return sql
