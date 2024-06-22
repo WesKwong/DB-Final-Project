@@ -103,7 +103,7 @@ class ProjectsFunc(BaseFunc):
         query_teacher_sql = teacher_genner.query()
         tid_set = set()
         rank_set = set()
-        funds_total = 0.0
+        funds_sum = 0.0
         mlist = []
         for i in range(member_num):
             tid = member_list[i * 3]
@@ -122,11 +122,11 @@ class ProjectsFunc(BaseFunc):
             rank_set.add(rank)
 
             funds_undertaken = member_list[i * 3 + 2]
-            funds_total += funds_undertaken
+            funds_sum += funds_undertaken
             member = (tid, rank, funds_undertaken)
             mlist.append(member)
 
-        if abs(funds_total - funds) > 1e-6:
+        if abs(funds_sum - funds) > 1e-6:
             raise gr.Error("成员承担经费总和与项目经费不符!")
 
         under_genner = UndertakenProjectsTable()
@@ -179,7 +179,7 @@ class ProjectsFunc(BaseFunc):
         query_teacher_sql = teacher_genner.query()
         tid_set = set()
         rank_set = set()
-        funds_total = 0.0
+        funds_sum = 0.0
         mlist = []
         for i in range(member_num):
             tid = member_list[i * 3]
@@ -198,11 +198,11 @@ class ProjectsFunc(BaseFunc):
             rank_set.add(rank)
 
             funds_undertaken = member_list[i * 3 + 2]
-            funds_total += funds_undertaken
+            funds_sum += funds_undertaken
             member = (tid, rank, funds_undertaken)
             mlist.append(member)
 
-        if abs(funds_total - funds) > 1e-6:
+        if abs(funds_sum - funds) > 1e-6:
             raise gr.Error("成员承担经费总和与项目经费不符!")
 
         query_sql = self.genner.query()
