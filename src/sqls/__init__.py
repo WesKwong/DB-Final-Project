@@ -6,3 +6,4 @@ from .projects import ProjectsTable, ProjectsFunc, project_type_map
 from .publishedpapers import PublishedPapersTable
 from .undertakenprojects import UndertakenProjectsTable
 from .taughtcourses import TaughtCoursesTable, TaughtCoursesFunc, semester_map
+from .summary import SummaryTable, SummaryFunc

@@ -382,8 +382,37 @@ with gr.Blocks() as demo:
                 outputs=[course_df, teachers_df])
 
     with gr.Tab("📊 查询统计"):
-        pass
-
+        summary_genner = SummaryTable()
+        summary_func = SummaryFunc(summary_genner, handler)
+        with gr.Row():
+            summary_tid = gr.Textbox(label="工号",
+                                        placeholder="请输入工号",
+                                        value="T0001",
+                                        interactive=True)
+            summary_start_year = gr.Number(label="起始年份",
+                                        value=current_year,
+                                        minimum=1900,
+                                        maximum=current_year,
+                                        interactive=True,
+                                        precision=0)
+            summary_end_year = gr.Number(label="结束年份",
+                                        value=current_year,
+                                        minimum=1900,
+                                        maximum=current_year,
+                                        interactive=True,
+                                        precision=0)
+            summary_button = gr.Button("🔍 查询")
+            export_button = gr.Button("📜 导出")
+        export_file = gr.File(label="导出文件", type="filepath")
+        summary_md = gr.Markdown("")
+        summary_button.click(
+            fn=summary_func.query_summary,
+            inputs=[summary_tid, summary_start_year, summary_end_year],
+            outputs=[summary_md])
+        export_button.click(
+            fn=summary_func.export_summary,
+            inputs=[summary_tid, summary_start_year, summary_end_year],
+            outputs=[export_file])
 
 @logger.catch
 def main():
