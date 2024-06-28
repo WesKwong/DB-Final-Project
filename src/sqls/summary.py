@@ -199,7 +199,7 @@ class SummaryFunc(object):
                 f"{row[1]}, " + \
                 f"{project_type_map[row[2]-1][0]}, " + \
                 f"{str(row[3])}~{str(row[4])}, " + \
-                f"[(承担经费/总经费) ({str(row[5])}/{str(row[6])})], " + \
+                f"(承担经费/总经费):({str(row[5])}/{str(row[6])}), " + \
                 f"第{str(row[7])}负责人"
                 for row in pf_info[1]
             ]
@@ -215,5 +215,5 @@ class SummaryFunc(object):
         if not os.path.exists(path):
             os.makedirs(path)
         path = os.path.join(path, f"{tid}_summary_{start_year}-{end_year}.pdf")
-        md2pdf(pdf_file_path=path, md_content=self.md.get_md(), css_file_path="./css/github.css")
+        md2pdf(pdf_file_path=path, md_content=self.md.get_md())
         return path

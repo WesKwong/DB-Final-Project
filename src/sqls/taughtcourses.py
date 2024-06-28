@@ -95,7 +95,7 @@ class TaughtCoursesTable(BaseTable):
     @staticmethod
     def query_coursename():
         sql = """
-        SELECT `CourseName`
+        SELECT `CourseName`, `CreditHours`
         FROM `Courses`
         WHERE `CourseID` = %s;
         """
@@ -106,19 +106,20 @@ class TaughtCoursesFunc(BaseFunc):
     def __init__(self, genner, handler) -> None:
         super().__init__(genner, handler)
 
-    def insert(self, cid: str, year: int, semester: int, hours: int,
+    def insert(self, cid: str, year: int, semester: int,
                t_num: int, *t_list: list):
         if cid == "":
             raise gr.Error("课程号不能为空!")
 
-        courses_genner = CoursesTable()
-        query_course_sql = courses_genner.query()
+        query_course_sql = self.genner.query_coursename()
         result = self.handler.query(query_course_sql, (cid, ))
         if result[0]:
             if len(result[1]) == 0:
                 raise gr.Error("课程号不存在!")
         else:
             raise gr.Error("授课信息增加失败: " + result[1])
+
+        hours = int(result[1][0][1])
 
         teacher_genner = TeachersTable()
         query_teacher_sql = teacher_genner.query()
@@ -167,19 +168,20 @@ class TaughtCoursesFunc(BaseFunc):
         else:
             raise gr.Error("删除失败: " + result[1])
 
-    def update(self, cid: str, year: int, semester: int, hours: int,
+    def update(self, cid: str, year: int, semester: int,
                t_num: int, *t_list: list):
         if cid == "":
             raise gr.Error("课程号不能为空!")
 
-        courses_genner = CoursesTable()
-        query_course_sql = courses_genner.query()
+        query_course_sql = self.genner.query_coursename()
         result = self.handler.query(query_course_sql, (cid, ))
         if result[0]:
             if len(result[1]) == 0:
                 raise gr.Error("课程号不存在!")
         else:
             raise gr.Error("授课信息增加失败: " + result[1])
+
+        hours = int(result[1][0][1])
 
         teacher_genner = TeachersTable()
         query_teacher_sql = teacher_genner.query()

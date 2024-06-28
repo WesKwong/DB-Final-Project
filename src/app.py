@@ -307,11 +307,6 @@ with gr.Blocks() as demo:
                                          label="学期",
                                          value=1,
                                          interactive=True)
-                tchours = gr.Number(label="课程学时",
-                                    value=1,
-                                    minimum=1,
-                                    precision=0,
-                                    interactive=True)
 
             gr.Markdown("<center> <h2> 👨‍🏫 教师信息 </h2> </center>")
             tc_num = gr.State(value=1)
@@ -343,10 +338,10 @@ with gr.Blocks() as demo:
 
                 tcinsert_button.click(
                     fn=taught_func.insert,
-                    inputs=[tcid, tcyear, tcsemester, tchours, tc_num, *boxes])
+                    inputs=[tcid, tcyear, tcsemester, tc_num, *boxes])
                 tcupdate_button.click(
                     fn=taught_func.update,
-                    inputs=[tcid, tcyear, tcsemester, tchours, tc_num, *boxes])
+                    inputs=[tcid, tcyear, tcsemester, tc_num, *boxes])
 
             with gr.Row():
                 tcinsert_button = gr.Button("💡 增加")

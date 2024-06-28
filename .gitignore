@@ -1,5 +1,4 @@
-**/data
-**/results
+**/export
 **/__pycache__
 **/.vscode
 **/.DS_Store
